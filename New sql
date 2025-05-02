@@ -1,0 +1,48 @@
+import sqlite3
+
+def connect_db():
+    return sqlite3.connect("company.db")
+
+def create_table(conn):
+    try:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS employees (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                age INTEGER,
+                department TEXT
+            );
+        """)
+        conn.commit()
+        print("Table created successfully.")
+    except Exception as e:
+        print("Arre baap re! Error in creating table:", e)
+
+def insert_employees(conn):
+    employees = [
+        ('Ravi', 28, 'Engineering'),
+        ('Pooja', 34, 'HR'),
+        ('Amit', 25, 'Marketing')
+    ]
+    try:
+        conn.executemany("INSERT INTO employees (name, age, department) VALUES (?, ?, ?);", employees)
+        conn.commit()
+        print("Data inserted, mast kaam!")
+    except Exception as e:
+        print("Oho! Problem while inserting data:", e)
+
+def fetch_and_display(conn):
+    cursor = conn.execute("SELECT * FROM employees;")
+    print("\nEmployee Records:")
+    for row in cursor:
+        print(f"ID: {row[0]}, Name: {row[1]}, Age: {row[2]}, Dept: {row[3]}")
+
+def main():
+    conn = connect_db()
+    create_table(conn)
+    insert_employees(conn)
+    fetch_and_display(conn)
+    conn.close()
+
+if __name__ == "__main__":
+    main()
